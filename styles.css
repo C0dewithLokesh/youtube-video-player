@@ -7,6 +7,8 @@
 body {
   margin: 0;
   padding-top: 50px;
+  display: flex;
+  gap: 20px;
 }
 
 .video-container {
@@ -15,7 +17,7 @@ body {
   max-width: 1000px;
   display: flex;
   justify-content: center;
-  margin-inline: auto;
+  margin-left: 50px;
   background-color: black;
 }
 
@@ -283,4 +285,23 @@ video {
 .video-container.scrubbing .timeline,
 .timeline-container:hover .timeline {
   height: 100%;
+}
+
+.chapters-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.chapter-container {
+  cursor: pointer;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 10px;
+  width: 200px;
+}
+
+.chapter-container:hover {
+  background-color: #eee;
 }

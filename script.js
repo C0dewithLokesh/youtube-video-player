@@ -14,6 +14,7 @@ const videoContainer = document.querySelector(".video-container");
 const timelineContainer = document.querySelector(".timeline-container");
 const timelineWrapper = document.querySelector(".timeline");
 const video = document.querySelector("video");
+const chaptersWrapper = document.querySelector(".chapters-wrapper");
 
 document.addEventListener("keydown", (e) => {
   const tagName = document.activeElement.tagName.toLowerCase();
@@ -81,16 +82,23 @@ var player = videojs(
 
 const segment = [
   {
+    segmentName: "Introduction",
+    starttime: "0:00",
+    endtime: "1: 00",
+  },
+  {
     segmentName: "Segment1",
-    time: "1:00",
+    starttime: "1:00",
+    endtime: "2: 00",
   },
   {
     segmentName: "Segment2",
-    time: "2:00",
+    starttime: "2:00",
+    endtime: "2: 50",
   },
   {
     segmentName: "Segment3",
-    time: "2:50",
+    starttime: "2:50",
   },
 ];
 
@@ -143,9 +151,26 @@ function handleTimelineUpdate(e) {
   }
 }
 
+function timeToSeconds(timeString) {
+  const [minutes, seconds] = timeString.split(":");
+  const minutesAsInt = parseInt(minutes);
+  const secondsAsInt = parseInt(seconds);
+  const totalSeconds = minutesAsInt * 60 + secondsAsInt;
+  return totalSeconds;
+}
+
 // Find current segment
 function findCurrentSegment(percent) {
-  const segmentIndex = Math.floor(percent * segment.length);
+  const currentTime = percent * video.duration;
+
+  let segmentIndex = 0;
+  let accumulatedTime = timeToSeconds(segment[segmentIndex].endtime);
+
+  while (accumulatedTime <= currentTime && segmentIndex < segment.length - 1) {
+    segmentIndex++;
+    accumulatedTime = timeToSeconds(segment[segmentIndex].endtime);
+  }
+
   return segment[segmentIndex];
 }
 
@@ -161,11 +186,10 @@ function createSegmentBreaks() {
     segmentBreak.className = "segment-break";
 
     const leftOffset =
-      ((parseInt(seg.time.split(":")[0], 10) * 60 +
-        parseInt(seg.time.split(":")[1], 10)) /
+      ((parseInt(seg.starttime.split(":")[0], 10) * 60 +
+        parseInt(seg.starttime.split(":")[1], 10)) /
         video.duration) *
       100;
-    console.log(leftOffset);
     segmentBreak.style.left = `${leftOffset}%`;
 
     timelineWrapper.appendChild(segmentBreak);
@@ -291,4 +315,31 @@ video.addEventListener("play", () => {
 
 video.addEventListener("pause", () => {
   videoContainer.classList.add("paused");
+});
+
+// chpaters-list
+
+segment.forEach((segmentData, index) => {
+  const chapterContainer = document.createElement("div");
+  chapterContainer.classList.add("chapter-container");
+
+  const chapterName = document.createElement("p");
+  chapterName.classList.add("chapter-name");
+  chapterName.textContent = segmentData.segmentName;
+
+  const chapterTime = document.createElement("p");
+  chapterTime.classList.add("chapter-time");
+  chapterTime.textContent = segmentData.starttime;
+
+  chapterContainer.appendChild(chapterName);
+  chapterContainer.appendChild(chapterTime);
+
+  chapterContainer.addEventListener("click", function () {
+    // Add your onclick event logic here
+    video.currentTime = timeToSeconds(segment[index].starttime);
+    console.log(video.currentTime)
+    console.log(`Chapter ${index + 1} clicked`);
+  });
+
+  chaptersWrapper.appendChild(chapterContainer);
 });
